@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.df.javafiddle</groupId>
+	<artifactId>javafiddle-web</artifactId>
+	<version>1</version>
+
+	<dependencies>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+				<version>1.7.0</version>
+				<executions> 
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<minimize>false</minimize>
+					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
+					<jsDestinationFolder>${basedir}/war/js/</jsDestinationFolder>
+					<cssDestinationFolder>${basedir}/war/css</cssDestinationFolder>
+					<contextFolder>${basedir}/war/</contextFolder>
+					<wroFile>${basedir}/wro.xml</wroFile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
