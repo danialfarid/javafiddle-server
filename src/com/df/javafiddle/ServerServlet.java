@@ -15,6 +15,10 @@ public class ServerServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if (req.getRequestURI().equals("/download")) {
+			downloadJar(req, resp);
+			return;
+		}
 		String[] split = req.getRequestURI().substring(1).split("/");
 		String projectId = split[0];
 		resp.setContentType("text/plain");
@@ -56,5 +60,9 @@ public class ServerServlet extends HttpServlet {
 			}
 		}
 		// super.service(req, resp);
+	}
+
+	protected void downloadJar(HttpServletRequest req, HttpServletResponse resp) {
+
 	}
 }

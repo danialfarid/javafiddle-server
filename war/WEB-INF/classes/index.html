@@ -3,16 +3,23 @@
 <head>
 <meta charset="utf-8">
 <title>Java Fiddle</title>
-<script src="js/cheetajs.js"></script>
-<script src="js/javafiddle.js"></script>
+<script src="cheetajs.js"></script>
+<script src="javafiddle.js"></script>
+<link rel="stylesheet" type="text/css" href="javafiddle.css">
 </head>
 <body>
 	<div data-model.="jf">
-		<div class="name" data-text.=".name"></div>
-		<div class="desc" data-text.=".desc"></div>
+		<div class="name">Java Fiddle</div>
+		<a class="cl-srv" href="/download">Download and run client.jar</a>
+		<input type="number" data-bind.="port" placeholder="custom port">
 		<div class="class-sec">
-			<input type="text" data-bind.=".newClassName">
-			<div class="button" data-onclick.onkeyupspace.=".addClass(.newClassName)"></div>
+			Class List
+			<div class="button" data-onclick.onkeyupspace.=".showAddClass=true">+</div>
+			<div class="add-class" data-show.=".showAddClass" data-init.='.showAddClass=false'>
+				<div class="close" data-onclick.onkeyupspace.=".showAddClass=false">X</div>
+				<input type="text" data-bind.=".newClassName">
+				<div class="button" data-onclick.onkeyupspace.=".addClass(.newClassName)"></div>
+			</div>
 			<ul class="classes">
 				<li data-for.="clazz in .classes" data-class.="$i==.selIndex ? 'highlight' : ''" data-onclick.onkeyupspace.=".selClass= clazz; .selIndex=$i">
 					<div data-text.="clazz.name"></div>

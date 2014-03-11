@@ -27,9 +27,9 @@
 				<configuration>
 					<minimize>false</minimize>
 					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
-					<jsDestinationFolder>${basedir}/war/js/</jsDestinationFolder>
-					<cssDestinationFolder>${basedir}/war/css</cssDestinationFolder>
-					<contextFolder>${basedir}/war/</contextFolder>
+					<jsDestinationFolder>${basedir}/war/</jsDestinationFolder>
+					<cssDestinationFolder>${basedir}/war/</cssDestinationFolder>
+					<contextFolder>${basedir}/src/</contextFolder>
 					<wroFile>${basedir}/wro.xml</wroFile>
 				</configuration>
 			</plugin>
