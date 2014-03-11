@@ -34,7 +34,8 @@ public class ServerServlet extends HttpServlet {
 				if ("class".equals(split[1])) {
 					resp.getWriter().write(DataStore.INSTANCE.createClass(projectId, split[2]));
 				} else if ("lib".equals(split[1])) {
-					resp.getWriter().write(DataStore.INSTANCE.createLib(projectId, split[2], split[3]));
+					String[] nameUrl = IoUtil.readStream(req.getInputStream()).split((char) 0 + "");
+					resp.getWriter().write(DataStore.INSTANCE.createLib(projectId, nameUrl[0], nameUrl[1]));
 				}
 			} else if ("PUT".equalsIgnoreCase(req.getMethod())) {
 				if ("class".equals(split[1])) {
@@ -45,7 +46,7 @@ public class ServerServlet extends HttpServlet {
 				if ("class".equals(split[1])) {
 					DataStore.INSTANCE.deleteClass(projectId, split[2]);
 				} else if ("lib".equals(split[1])) {
-					DataStore.INSTANCE.deleteLib(projectId, split[2]);
+					DataStore.INSTANCE.deleteLib(projectId, IoUtil.readStream(req.getInputStream()));
 				}
 			}
 		} else {

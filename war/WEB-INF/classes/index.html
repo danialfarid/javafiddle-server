@@ -11,40 +11,37 @@
 	<div data-model.="jf">
 		<div class="name">Java Fiddle</div>
 		<a class="cl-srv" href="/download">Download and run client.jar</a>
-		<input type="number" data-bind.="port" placeholder="custom port">
 		<div class="class-sec">
 			Class List
-			<div class="button" data-onclick.onkeyupspace.=".showAddClass=true">+</div>
-			<div class="add-class" data-show.=".showAddClass" data-init.='.showAddClass=false'>
-				<div class="close" data-onclick.onkeyupspace.=".showAddClass=false">X</div>
-				<input type="text" data-bind.=".newClassName">
-				<div class="button" data-onclick.onkeyupspace.=".addClass(.newClassName)"></div>
+			<div class="button" data-onclick.onkeydown-space-enter.=".showAddClass=true" tabindex="0">+</div>
+			<div class="add-class" data-show.=".showAddClass" data-init.=".showAddClass=false" data-onkeyup-esc.=".showAddClass=false">
+				<div class="close" data-onclick.onkeydown-space-enter.=".showAddClass=false" tabindex="0">X</div>
+				<input type="text" data-bind.=".newClassName" data-focus.=".showAddClass" data-onkeydown-enter.=".addClass(.newClassName);.showAddClass=false">
+				<div class="button" data-onclick.onkeydown-space-enter.=".addClass(.newClassName);.showAddClass=false" tabindex="0">Create</div>
 			</div>
 			<ul class="classes">
-				<li data-for.="clazz in .classes" data-class.="$i==.selIndex ? 'highlight' : ''" data-onclick.onkeyupspace.=".selClass= clazz; .selIndex=$i">
+				<li data-for.="clazz in .classes" data-class.="$i==jf.selIndex ? 'highlight' : ''" data-onclick.onkeydown-space-enter.="jf.selClass=clazz; jf.selIndex=$i" tabindex="0">
 					<div data-text.="clazz.name"></div>
-					<div class="button" data-onclick.onkeyupspace.=".removeClass(clazz)">X</div>
+					<div class="button" data-onclick.onkeydown-space-enter.="jf.removeClass(clazz.name)" tabindex="0">X</div>
 				</li>
 			</ul>
 		</div>
 		<div class="lib-sec">
-			<div class="button" data-onclick.onkeyupspace.=".showAddLib=true">+</div>
-			<div class="add-lib" data-show.=".showAddLib" data-init.='.showAddLib = false'>
-				<div class="close" data-onclick.onkeyupspace.=".showAddLib=false">X</div>
-				<input type="text" name="name" data-bind.=".newLibName">
-				<label><input type="radio" name="type" data-bind.=".newLibType" value="maven">Maven</label>
-				<label><input type="radio" name="type" data-bind.=".newLibType" value="url">
-				URL: <input type="text" name="url" data-bind.=".newLibUrl"></label>
-				<div class="button" data-onclick.onkeyupspace.=".addLib(.newLibName, .newLibType, .newLibUrl);showAddLib=false"></div>
+			<div class="button" data-onclick.onkeydown-space-enter.=".showAddLib=true" tabindex="0">+</div>
+			<div class="add-lib" data-show.=".showAddLib" data-init.='.showAddLib = false' data-onkeyup-esc.=".showAddLib=false">
+				<div class="close" data-onclick.onkeydown-space-enter.=".showAddLib=false" tabindex="0">X</div>
+				<input type="text" name="name" data-bind.=".newLibName" data-focus.=".showAddLib" data-onkeydown-enter.=".addLib(.newLibName, .newLibUrl);.showAddLib=false">
+				URL: <input type="text" name="url" data-bind.=".newLibUrl" data-init.=".newLibUrl = 'Maven'">
+				<div class="button" data-onclick.onkeydown-space-enter.=".addLib(.newLibName, .newLibUrl);showAddLib=false" tabindex="0">Add</div>
 			</div>
 			<ul class="libs">
 				<li data-for.="lib in .libs">
-					<div data-text.="lib.name + '(' + lib.version + ')'" data-title.="lib.type + ' - ' + lib.url"></div>
-					<div class="button" data-onclick.onkeyupspace.=".removeLib(lib)">X</div>
+					<div data-text.="lib.name" data-title.="lib.url"></div><span data-text.="'#latest: (' + lib.version + ')'"></span>
+					<div class="button" data-onclick.onkeydown-space-enter.="jf.removeLib(lib.name)" tabindex="0">X</div>
 				</li>
 			</ul>
 			<div class="java-src">
-				<textarea rows="20" cols="20" data-bind.=".selClass.src"></textarea>
+				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"></textarea>
 			</div>
 		</div>
 	</div>

@@ -88,13 +88,14 @@ public class DataStore {
 	}
 
 	public String createLib(String id, String name, String url) {
+		deleteLib(id, name);
 		Entity lib = new Entity("Lib");
 		lib.setProperty("id", id);
 		lib.setProperty("name", name);
 		lib.setProperty("url", url);
 		lib.setProperty("date", new Date());
 		datastore.put(lib);
-		return url;
+		return name;
 	}
 
 	public void updateClass(String id, String name, String src) {
@@ -113,10 +114,11 @@ public class DataStore {
 				new FilterPredicate("name", FilterOperator.EQUAL, name));
 
 		Query q = new Query("Class").setFilter(filter);
-		Entity result = datastore.prepare(q).asSingleEntity();
-
-		if (result != null) {
-			datastore.delete(result.getKey());
+		Iterable<Entity> result = datastore.prepare(q).asIterable();
+		for (Entity entity : result) {
+			if (result != null) {
+				datastore.delete(entity.getKey());
+			}
 		}
 	}
 
@@ -125,8 +127,11 @@ public class DataStore {
 				new FilterPredicate("name", FilterOperator.EQUAL, name));
 
 		Query q = new Query("Lib").setFilter(filter);
-		Entity result = datastore.prepare(q).asSingleEntity();
-
-		datastore.delete(result.getKey());
+		Iterable<Entity> result = datastore.prepare(q).asIterable();
+		for (Entity entity : result) {
+			if (result != null) {
+				datastore.delete(entity.getKey());
+			}
+		}
 	}
 }
