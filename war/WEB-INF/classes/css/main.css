@@ -2,6 +2,7 @@
 	display: inline-block;
 }
 
-.java-src {
-		
+.java-src textarea {
+	width: 800px;
+	height: 400px;
 }
