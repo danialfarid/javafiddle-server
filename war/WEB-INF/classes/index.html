@@ -9,7 +9,7 @@
 </head>
 <body>
 	<div data-model.="jf">
-		<div class="name">Java Fiddle</div>
+		<div class="name" data-on_dsa='dew'>Java Fiddle</div>
 		<a class="cl-srv" href="/download">Download and run client.jar</a>
 		<div class="class-sec">
 			Class List
@@ -41,7 +41,8 @@
 				</li>
 			</ul>
 			<div class="java-src">
-				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"></textarea>
+				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
+					data-watch.=".selClass.src;.updateClass(.selClass.name, .selClass.src)"></textarea>
 			</div>
 		</div>
 	</div>

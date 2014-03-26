@@ -31,7 +31,6 @@ Oo.future(function() {
 //	}) 
 	
 	jf.addClass = function(name, src, skipServer) {
-		var split = name.split('.');
 		if (!skipServer) {
 			jf.removeClass(name, true);
 			new Oo.XHR().open('POST', '/' + jf.projectId + '/class/' + name).send().onSuccess(function(xhr) {
@@ -53,6 +52,16 @@ Oo.future(function() {
 				}
 			}
 		}
+	};
+	
+	jf.updateClass = function(name, src) {
+		if (!skipServer) {
+			jf.removeClass(jf.name, true);
+			new Oo.XHR().open('PUT', '/' + jf.projectId + '/class/' + name).send(src).onSuccess(function(xhr) {
+				jf.classes.push({name: name, src: xhr.data});			
+			});
+		}
+		new Oo.XHR().open('PUT', localServer() + '/' + jf.projectId + '/class/' + name).send(src);
 	};
 	
 	jf.addLib = function(name, url, skipServer) {

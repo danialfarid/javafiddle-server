@@ -154,7 +154,8 @@ $cheeta.model = $cheeta.model || {
 	interceptProp: function(model, value, name) {
 		if (value != null) {
 			var beforeValue = value[name];
-			var isCheetaIntercepted = model.parent.children && model.parent.children[name] != null; 
+			var isCheetaIntercepted = model.parent.children && model.parent.children[name] != null;
+			// avoid infinit loop to redefine prop
 			var prevProp = isCheetaIntercepted ? null : Object.getOwnPropertyDescriptor(value, name);
 			try {
 				Object.defineProperty(value, name, {
@@ -164,6 +165,9 @@ $cheeta.model = $cheeta.model || {
 			        	}
 			        	val = (prevProp && prevProp.get && prevProp.get.apply(value)) || val;
 			        	var prevVal = model.value;
+			        	for (var key in model.children) {
+			        		
+			        	}
 			        	if (prevVal != val) {
 			        		model.value = val;
 			        		if (model.isArray) {
@@ -173,6 +177,12 @@ $cheeta.model = $cheeta.model || {
 				        	if (val instanceof Object) {
 								for (var key in model.children) {
 									var origVal = val[key];
+									// cleanup the previous value's child interceptors.
+									if (prevVal != null) {
+										var pval = prevVal[key];
+										delete prevVal[key];
+										prevVal[key] = pval;
+									}
 									$cheeta.model.interceptProp(model.children[key], val, key);
 									val[key] = origVal;
 								}
@@ -256,6 +266,15 @@ $cheeta.model.root = $cheeta.model.root || new $cheeta.model.Model(null);
 $cheeta.model.root.value = window;
 $cheeta.root = $cheeta.model.root;
 
+$cheeta.watchFns = [];
+$cheeta.watch = function(modelExpr, fn) {
+	$cheeta.watchFns.push(fn);
+	var elem = document.createElement('div');
+	elem.setAttribute('style', 'display:none');
+	elem.setAttribute('watch.', modelExpr + ';$cheeta.watchFns[' + ($cheeta.watchFns.length - 1) + ']()');
+	document.body.appendChild(elem);
+};
+
 $cheeta.future = function(future) {
 	$cheeta.future.evals.push([future]);
 };
@@ -286,7 +305,7 @@ $cheeta.Directive = function(name, model) {
 		this.detach = detachFn;
 		return this;
 	};
-	this.onModelValueChange = function(changeFn) {
+	this.onModelValueChange = function(changeFn, attrValueTransformer) {
 		var origAttach = this.attach;
 		var origDetach = this.detach;
 		this.attach = function(elem, attrName, parentModels) {
@@ -297,10 +316,11 @@ $cheeta.Directive = function(name, model) {
 				var _this = this; 
 				model.bindModelChange(elem, attrName, function(e) {
 					var val = eval(elem.getAttribute(attrName));
-					changeFn.apply(_this, [val, elem, attrName, parentModels]);
+					changeFn && changeFn.apply(_this, [val, elem, attrName, parentModels]);
 				});
-			})) {
-				changeFn.apply(this, [eval(elem.getAttribute(attrName)), elem, attrName, parentModels]);
+			}, false, attrValueTransformer)) {
+				var val = eval(elem.getAttribute(attrName));
+				changeFn && changeFn.apply(this, [val, elem, attrName, parentModels]);
 			}
 			//return models;
 		}
@@ -326,9 +346,10 @@ $cheeta.Directive = function(name, model) {
 //	this.id = function(elem) {
 //		return elem.__$cheeta__id_ || (elem.__$cheeta__id_ = this.this.nextId());
 //	}; 
-	this.resolveModelNames = function(elem, attrName, parentModels, onModel, skipSetAttribute) {
+	this.resolveModelNames = function(elem, attrName, parentModels, onModel, skipSetAttribute, attrValueTransformer) {
 		var directive = this, hasModel = false;
-		resolvedVal = this.parseModelVars(elem.getAttribute(attrName), function(modelRef) {
+		resolvedVal = this.parseModelVars((attrValueTransformer && attrValueTransformer(elem, attrName)) 
+				|| elem.getAttribute(attrName), function(modelRef) {
 			var model = $cheeta.model.createOrGetModel(parentModels, modelRef.trim());
 			hasModel = true;
 			if (model instanceof Array) {
@@ -958,6 +979,12 @@ new $cheeta.Directive('value.').onModelValueChange(function(val, elem) {
 	};
 	viewDirective.cache = {};
 })();
+new $cheeta.Directive('watch*').onModelValueChange(null, function(elem, attrName) {
+	var val = elem.getAttribute(attrName);
+	//TODO handle a['de;de'];fn()
+	return val.substring(0, val.indexOf(';'));
+});
+
 $cheeta.hash = {
 	keyval: {},
 	watchers: {},
