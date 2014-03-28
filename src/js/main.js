@@ -26,9 +26,9 @@ Oo.future(function() {
 		}
 	});
 	
-//	Oo.XHR.onError(function(xhr) {
-//		jf.messages.push(xhr.data);
-//	}) 
+	Oo.XHR.onError(function(xhr) {
+		jf.messages.push(xhr.data);
+	});
 	
 	jf.addClass = function(name, src, skipServer) {
 		if (!skipServer) {
@@ -54,15 +54,37 @@ Oo.future(function() {
 		}
 	};
 	
+	var prevName;
+	var delay = 1000, timeout, lastUpdate = 0, updatingData;
 	jf.updateClass = function(name, src) {
-		if (!skipServer) {
-			jf.removeClass(jf.name, true);
-			new Oo.XHR().open('PUT', '/' + jf.projectId + '/class/' + name).send(src).onSuccess(function(xhr) {
-				jf.classes.push({name: name, src: xhr.data});			
-			});
+		if (prevName === name) {
+			if ((Date.now() - lastUpdate) < 3000) {
+				clearTimeout(timeout);
+			} else {
+				lastUpdate = Date.now();
+			}
+			updatingData = [name, src];
+			timeout = setTimeout(function() {
+				jf.sendUpdateClass(name, src);
+				lastUpdate = Date.now();
+				updatingData = null;
+			}, delay);
+		} else {
+			prevName = name;
 		}
-		new Oo.XHR().open('PUT', localServer() + '/' + jf.projectId + '/class/' + name).send(src);
 	};
+	
+	window.onbeforeunload = function(e) {
+		var data = updatingData
+        if (data) {
+        	jf.sendUpdateClass(data[0], data[1], true);
+        };
+    };
+	
+	jf.sendUpdateClass = function(name, src, sync) {
+		new Oo.XHR().open('PUT', '/' + jf.projectId + '/class/' + name, !sync).send(src);
+		new Oo.XHR().open('PUT', localServer() + '/' + jf.projectId + '/class/' + name, !sync).send(src);
+	} 
 	
 	jf.addLib = function(name, url, skipServer) {
 		if (!skipServer) {
