@@ -118,4 +118,8 @@ Oo.future(function() {
 			}
 		}
 	};
+	
+	jf.run = function() {
+		new Oo.XHR().open('POST', localServer() + '/' + jf.projectId + '/run').send());
+	}
 });
