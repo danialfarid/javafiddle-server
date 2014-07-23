@@ -96,4 +96,8 @@ Oo.future(function() {
 			}
 		}
 	};
+	
+	jf.run = function() {
+		Oo.XHR().open('GET', '/' + jf.projectId + '/run').send();
+	}
 });

@@ -44,6 +44,8 @@
 				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
 					data-watch.=".selClass.src;.updateClass(.selClass.name, .selClass.src)"></textarea>
 			</div>
+			
+			<div class="button" data-onclick.onkeydown-space-enter.=".run()">run</div>
 		</div>
 	</div>
 </body>
