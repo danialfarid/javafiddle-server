@@ -1,6 +1,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
   <group name="javafiddle">
     <js>/js/main.js</js>
+    <js>/js/editor.js</js>
     <css>/css/main.css</css>
   </group>
   <group name="cheetajs">

@@ -6,3 +6,10 @@
 	width: 800px;
 	height: 400px;
 }
+
+.err {
+	color: red;
+}
+.editor {
+	border: 1px solid green;
+}
