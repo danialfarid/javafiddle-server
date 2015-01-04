@@ -43,10 +43,10 @@
 				</li>
 			</ul>
 			<div class="java-src">
-				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
+ 				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
 					data-watch.=".selClass.src;" data-onwatch.=".updateClass(.selClass.name, .selClass.src)"></textarea>
-				<pre class="editor" tabindex="1" data-editor.=".selClass.src"></pre>
-			</div>
+<!--  				<pre class="editor" tabindex="1" data-editor.=".selClass.src"></pre>
+ -->			</div>
 			
 			<div class="button" data-onclick.onkeydown-space-enter.=".run()">run</div>
 			<label><input type="checkbox" data-bind.=".preserveLog">Preserve Log</label>
@@ -54,6 +54,7 @@
 			<pre class="out" data-text.=".out"></pre>
 			<pre class="err" data-text.=".err"></pre>
 			<div contentEditable="true">asdas<font color="red">dddd</font>ffffff <span style="color:blue">ccccccc</span></div>
+			<div contentEditable="true"><div>&zwnj;</div></div>
 		</div>
 	</div>
 </body>

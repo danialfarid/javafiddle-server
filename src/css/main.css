@@ -13,3 +13,18 @@
 .editor {
 	border: 1px solid green;
 }
+.editor .w {
+	color: blue;
+}
+.editor .p {
+	color: grey;
+}
+.editor .n {
+	color: green;
+}
+.editor span[t="n"] {
+	color: red;
+}
+.editor .rw{
+	color: #86001c;
+}

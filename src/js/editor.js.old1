@@ -3,30 +3,34 @@ var editor = function(elem) {
 		root: elem,
 		src: "",
 		line: 0,
-		pos: 0,
+		lastFocus: null,
+		lastPos: 0,
 		currElem: function() {
-			return window.getSelection().focusNode && window.getSelection().focusNode.parentNode && 
-				window.getSelection().focusNode.parentNode.parentNode === this.root && window.getSelection().focusNode.parentNode || 
-				this.lastFocus;
-		},
-		currPos: function() {
-			return window.getSelection().getRangeAt(0).startOffset;
+			var f = window.getSelection().focusNode;
+			if (f && f.parentNode) {
+				if (f.nodeType === 3) {
+					this.lastFocus = f.parentNode;
+					this.lastPos = window.getSelection().getRangeAt(0).startOffset;
+				} else {
+					this.lastFocus = f;
+					this.lastPos = 0;					
+				}
+			}
+			return this.lastFocus;
 		},
 		newElem: function(currElem, tag) {
 			var el = document.elem(tag ? tag : 'span', this.root, currElem || this.currElem());
 			this.lastFocus = el;
 			return el;
 		},
-		newLine: function() {
-			return this.newElem(null, 'div');
-		},
 		setFocus: function(elem, pos) {
-			console.log('setfocus', elem, pos);
 			var sel = window.getSelection();
 			var r = document.createRange();
 //			r.selectNode(elem.firstChild);
-			r.setStart(elem.firstChild || elem, pos);
-			r.setEnd(elem.firstChild || elem, pos);
+			try {
+				r.setStart(elem.firstChild || elem, pos);
+				r.setEnd(elem.firstChild || elem, pos);
+			} catch (e){}
 //			r.collapse();
 			sel.removeAllRanges();
 			sel.addRange(r);
@@ -34,53 +38,118 @@ var editor = function(elem) {
 			this.lastPos = pos;
 		},
 		init: function() {
-			this.newElem().innerHTML = "\r";
+			this.root.add(document.elem('<div><span>&zwnj;</span></div>')); 
 			var _this = this;
-			this.root.on('keydown', function() {
-				_this.lastFocus = _this.currElem();
-				_this.lastPos = _this.currPos();
-			});
+//			this.root.on('keyup', function() {
+//				_this.currElem();
+//			});
 			this.root.on('focus', function(e) {
-				console.log(window.getSelection().focusNode);
-				_this.setFocus(_this.lastFocus, _this.lastPos);
-				e.preventDefault();
-				e.stopPropagation();
+//				var sel = window.getSelection();
+//				sel.removeAllRanges();
+//				sel.addRange(this.r);
+////				_this.setFocus(_this.lastFocus, _this.lastPos);
+//				e.preventDefault();
+//				e.stopPropagation();
 			});
-			this.root.on('keypress', function(e) {
-				var c = e.keyCode;
-				var el = _this.currElem();
-				if ((c === 13 || c <= 47 || (c >= 58 && c <= 64)) && !el.attr('hasqoute')) {
-					if (el.tagName !== 'I') {
-						_this.syntaxCheck(el);
-						if (c === 13) {
-							el = _this.newElem(el, 'br');
-						}
-						var newEl = _this.newElem(el, 'i');
-						newEl.innerHTML = String.fromCharCode(c);
-						newEl.addClass("p");
-						setTimeout(function() {
-							_this.setFocus(newEl, 1);
-						}, 100);
-						e.preventDefault();
-						e.stopPropagation();
-					}
-				} else {
-					if (el.tagName === 'I') {
-						console.log(el.innerText);
-						if (el.innerHTML === '\r' || el.innerHTML === '\n') el.innerHTML = "";
-						_this.syntaxCheck(el);
-						var newEl = _this.newElem(el, 'span');
-						newEl.innerHTML = String.fromCharCode(c);
-						newEl.addClass("w");
-						setTimeout(function() {
-							_this.setFocus(newEl, 1);
-						}, 1);
-						e.preventDefault();
-						e.stopPropagation();						
-					}
+			this.root.on('keydown cut', function(e) {
+				var c = e.which || e.keyCode;
+				// tab, backspace, delete, enter
+				if (c === 9 || c === 8 || c === 127 || c === 13 || e.type.toLowerCase() === 'cut') {
+					var sel = window.getSelection();
+					var r = sel.getRangeAt(0);
+					if (r.startOffset > 0) setTimeout(function() {
+						_this.syntaxCheck(r.startContainer.parentNode);
+						console.log(r.startContainer.parentNode);
+					}, 1);
+					if (r.startContainer != r.endContainer && 
+							r.endOffset < r.endContainer.textContent.length) setTimeout(function() {
+						_this.syntaxCheck(r.endContainer.parentNode);
+						console.log(r.endContainer.parentNode);
+					}, 1);
+					// if we delete everything re-initialize the editor
+					setTimeout(function() {
+						console.log('html', _this.root.innerHTML, '-');
+						console.log('html', _this.root.innerText, '-');
+						if (_this.root.childNodes.length === 1 &&  _this.root.firstChild.innerHTML === '') {
+							_this.root.innerHTML = "";
+							var el = document.elem('<div><span>&zwnj;</span></div>')
+							_this.root.add(el);
+							_this.setFocus(el.firstChild, 1);
+						}					
+					}, 1);
+				}
+				if (c === 9) {
+					e.preventDefault();
+					_this.handleKeyPress(c);
 				}
 			});
+			this.root.on('paste', function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				console.log(e);
+				var str = e.clipboardData.getData('text/plain');
+				for (var i = 0; i < str.length; i++) {
+					_this.handleKeyPress(str.charCodeAt(i), true);
+				}
+			});
+			this.root.on('keypress', function(e) {
+				_this.handleKeyPress(e.which)
+			});
 			return this;
+		},
+		handleKeyPress: function(c, typeIn) {
+			var el = this.currElem();
+			if (!el.attr('hasqoute')) {
+				var tag;
+				if (c === 9) {
+//					el.parentElement.innerHTML += '\t';
+					if (el.tagName !== 'PRE') {
+						tag = 'pre';
+					}
+					var newEl = document.elem('<b>\t</b>');
+					el.addAfter(newEl);
+					el = newEl;
+//					tag = 'span';
+				} else if (c === 32) {
+					if (el.tagName !== 'B') {
+						tag = 'b';
+					}
+				} else if (c === 13) {
+//					while (el.parentElement !== this.root) {
+//						el = el.parentElement;
+//					}
+//					tag = 'div';
+				} else if ((c >= 33 && c <= 47) || (c >= 58 && c <= 64) || (c >= 91 && c <= 94) || (c >= 123 && c <= 126)) {
+					if (el.tagName !== 'I') {
+						tag = 'i';
+					}
+				} else if (c >= 48) {
+					if (el.tagName !== 'SPAN') {
+						tag = 'span';
+					}
+				}
+				if (tag) {
+					var newEl;	
+					this.syntaxCheck(el);
+					if (tag == 'div') {
+						newEl = document.elem('<div><span>&zwnj;</span></div>');	
+					} else {
+						newEl = document.elem('<' + tag + '>&zwnj;' + (typeIn ? String.fromCharCode(c) : '') + '</' + tag + '>');
+					}
+					el.addAfter(newEl);
+					if (el.tagName === 'PRE') {
+						el.remove();
+					} else if (el.innerHTML[0] === '\u200C') {
+						el.innerHTML = el.innerHTML.substring(1);
+					}
+					this.setFocus(newEl.firsChild || newEl, 1);
+				} else if (typeIn) {
+					var sel = window.getSelection();
+					var r = sel.getRangeAt(0);
+					
+					 String.fromCharCode(c);
+				}
+			}
 		},
 		lastFocus: null,
 		lastPos: 0,
