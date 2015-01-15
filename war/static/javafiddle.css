@@ -1,0 +1,12 @@
+.class-sec>.button{
+	display: inline-block;
+}
+
+.java-src textarea {
+	width: 800px;
+	height: 400px;
+}
+
+.err {
+	color: red;
+}

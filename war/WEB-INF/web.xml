@@ -4,15 +4,24 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+	<servlet>
+		<servlet-name>default</servlet-name>
+		<servlet-class> javax.servlet.http.HttpServlet</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>Javafiddle_web</servlet-name>
 		<servlet-class>com.df.javafiddle.ServerServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/static/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
 		<servlet-name>Javafiddle_web</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>/api/</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>static/index.html</welcome-file>
 	</welcome-file-list>
 </web-app>

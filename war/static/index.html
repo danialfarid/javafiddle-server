@@ -6,12 +6,21 @@
 <script src="cheetajs.js"></script>
 <script src="javafiddle.js"></script>
 <link rel="stylesheet" type="text/css" href="javafiddle.css">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/codemirror.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/addon/hint/show-hint.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/codemirror.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/addon/edit/matchbrackets.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/addon/hint/show-hint.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/4.10.0/mode/clike/clike.min.js"></script>
 </head>
 <body>
 	<div data-model.="jf">
 		<div class="notif" data-text.=".messages"></div>
-		<div class="name">Java Fiddle</div>
-		<a class="cl-srv" href="/download">Download and run client.jar</a>
+		<h1 class="name">Java Fiddle</h1>
+		<span>Share your java code here</span>
+		To run the code download <a class="cl-srv" href="/jfclient.jar" target="_blank" data-init.=".showHint=false">jfclient.jar</a> 
+		<span data-show.=".showHint">then double click on it or run this command <code>$java -jar jfclient.jar</code></span>
 		<div class="button" tabindex="0" data-onaction.=".run()">Run</div>
 		<div class="class-sec">
 			Class List
@@ -43,10 +52,11 @@
 				</li>
 			</ul>
 			<div class="java-src">
- 				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
-					data-watch.=".selClass.src;" data-onwatch.=".updateClass(.selClass.name, .selClass.src)"></textarea>
-<!--  				<pre class="editor" tabindex="1" data-editor.=".selClass.src"></pre>
- -->			</div>
+<!--  				<pre class="editor" tabindex="1" data-editor.=".selClass.src"></pre>-->
+				<div class="javaEditor"></div>			
+<!--  				<textarea data-bind.=".selClass.src" data-disabled.=".selClass ? null : true"
+					data-watch.=".selClass.src" data-onwatch.=".updateClass(.selClass.name, .selClass.src)"></textarea>-->
+ 			</div>
 			
 			<div class="button" data-onclick.onkeydown-space-enter.=".run()">run</div>
 			<label><input type="checkbox" data-bind.=".preserveLog">Preserve Log</label>

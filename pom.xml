@@ -16,7 +16,7 @@
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
 				<version>1.7.0</version>
-				<executions> 
+				<executions>
 					<execution>
 						<phase>process-resources</phase>
 						<goals>
@@ -27,11 +27,29 @@
 				<configuration>
 					<minimize>false</minimize>
 					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
-					<jsDestinationFolder>${basedir}/war/</jsDestinationFolder>
-					<cssDestinationFolder>${basedir}/war/</cssDestinationFolder>
+					<jsDestinationFolder>${basedir}/war/static</jsDestinationFolder>
+					<cssDestinationFolder>${basedir}/war/static</cssDestinationFolder> 
 					<contextFolder>${basedir}/src/</contextFolder>
 					<wroFile>${basedir}/wro.xml</wroFile>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>rename-file</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>../javafiddle/target/javafiddle-1.jar</sourceFile>
+							<destinationFile>${basedir}/war/static/jfclient.jar</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

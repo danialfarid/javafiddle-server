@@ -3,9 +3,13 @@ Oo.future(function() {
 	var localServer = function() {
 		return 'http://localhost:' + (jf.port || '8020');
 	}
-	var path = window.location.pathname + '/'
-	var slashIndex = path.indexOf('/');
-	jf.projectId = path.substring(slashIndex + 1, path.indexOf('/', slashIndex + 1));
+	var apiBase = '/api/';
+	jf.projectId = getProjectIdFromPath();
+	if (js.projectId == null) {
+		new Oo.XHR().open('POST', '/', false).send().onSuccess(function(xhr) {
+			jf.projectId = xhr.data;
+		});		
+	}
 	
 	new Oo.XHR().open('POST', localServer() + '/' + jf.projectId).send();
 	
@@ -148,7 +152,34 @@ Oo.future(function() {
 	};
 	pollErr();
 	
-//	jf.err
+	var editorElem = document.getElementsByClassName('javaEditor')[0];
+	var javaEditor = CodeMirror(editorElem, {
+		lineNumbers: true, 
+		indentUnit: 4,
+        matchBrackets: true,
+        mode: "text/x-java",
+        readOnly: true
+	});
+    
+	var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
+    CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";
+    
+	javaEditor.on('change', function() {
+		jf.selClass.src = javaEditor.getValue();
+	});
+	
+	Oo.watch("jf.selClass", function() {
+		javaEditor.setOption('readOnly', false);
+		jf.updateClass(jf.selClass.name, jf.selClass.src);
+		javaEditor.setValue(jf.selClass.src);
+		javaEditor.clearHistory();
+	});
+	
+	function getProjectIdFromPath() {
+		var path = window.location.pathname + '/'
+		var slashIndex = path.indexOf('/');
+		return path.substring(slashIndex + 1, path.indexOf('/', slashIndex + 1));
+	}
 });//var editor = function(elem) {
 //	return {
 //		root: elem,

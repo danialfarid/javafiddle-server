@@ -1,7 +1,6 @@
 package com.df.javafiddle;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,14 +14,9 @@ public class ServerServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getRequestURI().equals("/download")) {
-			downloadJar(req, resp);
-			return;
-		}
 		String[] split = req.getRequestURI().substring(1).split("/");
 		String projectId = split[0];
 		resp.setContentType("text/plain");
-
 		if (split.length > 1) {
 			if ("GET".equalsIgnoreCase(req.getMethod())) {
 				if ("class".equals(split[1])) {
@@ -51,19 +45,18 @@ public class ServerServlet extends HttpServlet {
 			}
 		} else {
 			if (split[0].isEmpty()) {
-				String id = DataStore.INSTANCE.createProject();
-				resp.sendRedirect(req.getRequestURL().append(id).toString());
-				return;
-			} else {
-				resp.setContentType("text/html");
-				InputStream stream = this.getClass().getClassLoader().getResourceAsStream("index.html");
-				resp.getWriter().write(IoUtil.readStream(stream));
+				if ("POST".equalsIgnoreCase(req.getMethod())) {
+					String id = DataStore.INSTANCE.createProject();
+					resp.getWriter().write(id);
+				}
+			} else { 
+//				req.setAttribute("internal-redirect", true);
+//				req.getRequestDispatcher("static/index.html").forward(req, resp);
+//				resp.setContentType("text/html");
+//				InputStream stream = this.getClass().getClassLoader().getResourceAsStream("index.html");
+//				resp.getWriter().write(IoUtil.readStream(stream));
 			}
 		}
 		// super.service(req, resp);
-	}
-
-	protected void downloadJar(HttpServletRequest req, HttpServletResponse resp) {
-
 	}
 }
